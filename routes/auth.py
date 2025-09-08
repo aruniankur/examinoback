@@ -42,6 +42,7 @@ def convert_objectid_to_str(obj):
 # Email settings
 EMAIL = os.getenv("EMAIL", "kfk@gmail.com")
 APP_PASSWORD = os.getenv("APP_PASSWORD", "zqtbgz")
+MAILPORT = os.getenv("MAILPORT", "465")
 
 # Pydantic models
 class EmailRequest(BaseModel):
@@ -117,7 +118,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 
 def send_otp(email: str, otp: str) -> bool:
     smtp_server = "smtp.gmail.com"
-    port = 465
+    port = MAILPORT
     sender_email = EMAIL
     password = APP_PASSWORD
 
