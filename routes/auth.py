@@ -116,7 +116,9 @@ def sendmail(email,otp):
     url = "https://mailman-717399453972.europe-west1.run.app"
     payload = {
     "email": email,
-    "message": f"you otp for email verification for examino is {otp} \n valid for 5 minutes",
+    "subject": "Your OTP Code for examino",
+    "message": f"""
+    Your otp for email verification for examino is {otp} \n valid for 5 minutes""",
     }
     try:
         response = requests.post(url, json=payload, timeout=10)
