@@ -5,6 +5,7 @@ certifi==2025.8.3
 charset-normalizer==3.4.3
 dnspython==2.8.0
 ecdsa==0.19.1
+email-validator==2.3.0
 fastapi==0.116.1
 google-api-core==2.25.1
 google-api-python-client==2.181.0
