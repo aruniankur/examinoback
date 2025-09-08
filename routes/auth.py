@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import os
 from routes.database import get_user_collection
 from bson import ObjectId
+import requests
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -38,11 +39,6 @@ def convert_objectid_to_str(obj):
         return str(obj)
     else:
         return obj
-
-# Email settings
-EMAIL = os.getenv("EMAIL", "kfk@gmail.com")
-APP_PASSWORD = os.getenv("APP_PASSWORD", "zqtbgz")
-MAILPORT = os.getenv("MAILPORT", "465")
 
 # Pydantic models
 class EmailRequest(BaseModel):
@@ -116,28 +112,18 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-def send_otp(email: str, otp: str) -> bool:
-    smtp_server = "smtp.gmail.com"
-    port = 587  # Use STARTTLS (works on Railway)
-    sender_email = EMAIL
-    password = APP_PASSWORD
-
-    message = f"""\
-Subject: Your OTP Code
-
-Your OTP is: {otp}
-It is valid for 5 minutes."""
-
+def sendmail(email,otp):
+    url = "https://mailman-717399453972.europe-west1.run.app"
+    payload = {
+    "email": email,
+    "message": f"you otp for email verification for examino is {otp} \n valid for 5 minutes",
+    }
     try:
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()
-            server.starttls(context=ssl.create_default_context())  # Upgrade to TLS
-            server.ehlo()
-            server.login(sender_email, password)
-            server.sendmail(sender_email, email, message)
+        response = requests.post(url, json=payload, timeout=10)
+        print("Status Code:", response.status_code)
         return True
-    except Exception as e:
-        print("Error sending email:", e)
+    except requests.exceptions.RequestException as e:
+        print("Error:", e)
         return False
 
 # Routes
@@ -149,7 +135,7 @@ async def request_otp(email_request: EmailRequest):
     expiry = time.time() + 300  # 5 min expiry
     otp_store[email] = {"otp": otp, "expiry": expiry}
 
-    if send_otp(email, otp):
+    if sendmail(email, otp):
         return {"message": "OTP sent successfully"}
     else:
         raise HTTPException(
