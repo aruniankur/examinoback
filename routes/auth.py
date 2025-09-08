@@ -118,7 +118,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 
 def send_otp(email: str, otp: str) -> bool:
     smtp_server = "smtp.gmail.com"
-    port = MAILPORT
+    port = 587  # Use STARTTLS (works on Railway)
     sender_email = EMAIL
     password = APP_PASSWORD
 
@@ -128,9 +128,11 @@ Subject: Your OTP Code
 Your OTP is: {otp}
 It is valid for 5 minutes."""
 
-    context = ssl.create_default_context()
     try:
-        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()
+            server.starttls(context=ssl.create_default_context())  # Upgrade to TLS
+            server.ehlo()
             server.login(sender_email, password)
             server.sendmail(sender_email, email, message)
         return True
