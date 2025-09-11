@@ -263,15 +263,15 @@ async def upload_test(request: Request, current_user: str = Depends(verify_token
             H_I = user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['I']
             H_NA = user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['NA']
 
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['VARC']['topics'][sdq]['easycorrect'] , E_C[1] + data['sections']['VARC']['topics'][sdq]['easycorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['VARC']['topics'][sdq]['easyincorrect'] , E_I[1] + data['sections']['VARC']['topics'][sdq]['easyincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['VARC']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['VARC']['topics'][sdq]['easyNAtotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['VARC']['topics'][sdq]['mediumcorrect'] , M_C[1] + data['sections']['VARC']['topics'][sdq]['mediumcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['VARC']['topics'][sdq]['mediumincorrect'] , M_I[1] + data['sections']['VARC']['topics'][sdq]['mediumincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['VARC']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['VARC']['topics'][sdq]['mediumNAtotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['VARC']['topics'][sdq]['hardcorrect'] , H_C[1] + data['sections']['VARC']['topics'][sdq]['hardcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['VARC']['topics'][sdq]['hardincorrect'] , H_I[1] + data['sections']['VARC']['topics'][sdq]['hardincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['VARC']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['VARC']['topics'][sdq]['hardNAtotaltime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['VARC']['topics'][sdq]['easyCorrect'] , E_C[1] + data['sections']['VARC']['topics'][sdq]['easyCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['VARC']['topics'][sdq]['easyIncorrect'] , E_I[1] + data['sections']['VARC']['topics'][sdq]['easyIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['VARC']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['VARC']['topics'][sdq]['easyNATotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['VARC']['topics'][sdq]['mediumCorrect'] , M_C[1] + data['sections']['VARC']['topics'][sdq]['mediumCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['VARC']['topics'][sdq]['mediumIncorrect'] , M_I[1] + data['sections']['VARC']['topics'][sdq]['mediumIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['VARC']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['VARC']['topics'][sdq]['mediumNATotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['VARC']['topics'][sdq]['hardCorrect'] , H_C[1] + data['sections']['VARC']['topics'][sdq]['hardCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['VARC']['topics'][sdq]['hardIncorrect'] , H_I[1] + data['sections']['VARC']['topics'][sdq]['hardIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['VARC']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['VARC']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['VARC']['topics'][sdq]['hardNATotalTime']]
 
     if data['sections']['DILR']['questions'] > 0:
         user_dashboard['PerformanceTrend']['DILR'].append(data['sections']['DILR']['accuracy'])
@@ -327,15 +327,15 @@ async def upload_test(request: Request, current_user: str = Depends(verify_token
             H_I = user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['I']
             H_NA = user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['NA']
 
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['DILR']['topics'][sdq]['easycorrect'] , E_C[1] + data['sections']['DILR']['topics'][sdq]['easycorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['DILR']['topics'][sdq]['easyincorrect'] , E_I[1] + data['sections']['DILR']['topics'][sdq]['easyincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['DILR']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['DILR']['topics'][sdq]['easyNAtotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['DILR']['topics'][sdq]['mediumcorrect'] , M_C[1] + data['sections']['DILR']['topics'][sdq]['mediumcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['DILR']['topics'][sdq]['mediumincorrect'] , M_I[1] + data['sections']['DILR']['topics'][sdq]['mediumincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['DILR']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['DILR']['topics'][sdq]['mediumNAtotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['DILR']['topics'][sdq]['hardcorrect'] , H_C[1] + data['sections']['DILR']['topics'][sdq]['hardcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['DILR']['topics'][sdq]['hardincorrect'] , H_I[1] + data['sections']['DILR']['topics'][sdq]['hardincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['DILR']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['DILR']['topics'][sdq]['hardNAtotaltime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['DILR']['topics'][sdq]['easyCorrect'] , E_C[1] + data['sections']['DILR']['topics'][sdq]['easyCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['DILR']['topics'][sdq]['easyIncorrect'] , E_I[1] + data['sections']['DILR']['topics'][sdq]['easyIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['DILR']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['DILR']['topics'][sdq]['easyNATotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['DILR']['topics'][sdq]['mediumCorrect'] , M_C[1] + data['sections']['DILR']['topics'][sdq]['mediumCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['DILR']['topics'][sdq]['mediumIncorrect'] , M_I[1] + data['sections']['DILR']['topics'][sdq]['mediumincorrecttotaltime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['DILR']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['DILR']['topics'][sdq]['mediumNATotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['DILR']['topics'][sdq]['hardCorrect'] , H_C[1] + data['sections']['DILR']['topics'][sdq]['hardCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['DILR']['topics'][sdq]['hardIncorrect'] , H_I[1] + data['sections']['DILR']['topics'][sdq]['hardIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['DILR']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['DILR']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['DILR']['topics'][sdq]['hardNATotalTime']]
 
     if data['sections']['QA']['questions'] > 0:
         user_dashboard['PerformanceTrend']['QA'].append(data['sections']['QA']['accuracy'])

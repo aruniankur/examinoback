@@ -349,7 +349,7 @@ async def login(user_credentials: UserLogin):
     """Login user and return JWT token"""
     email = user_credentials.email
     password = user_credentials.password
-
+    print(email, password)
     # Get user collection
     user_collection = get_user_collection()
     
