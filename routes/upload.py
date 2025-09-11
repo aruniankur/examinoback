@@ -175,15 +175,14 @@ async def get_test_result_detail(request: Request, current_user: str = Depends(v
             detail="Test not found"
         )
     test_data['_id'] = str(test_data['_id'])
-    #print(test_data)
+    print(test_data)
     return test_data
 
 @router.post("/testresult")
 async def upload_test(request: Request, current_user: str = Depends(verify_token)):
     data = await request.json()
-    print(data)
-    print(current_user)
     test_id = test.insert_one(data)
+    print(data)
     print(test_id.inserted_id)
     user.update_one({"email": current_user}, {"$push": {"test_id": test_id.inserted_id}})
     us = user.find_one({"email": current_user})
@@ -392,19 +391,22 @@ async def upload_test(request: Request, current_user: str = Depends(verify_token
             H_I = user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['I']
             H_NA = user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['NA']
 
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['QA']['topics'][sdq]['easycorrect'] , E_C[1] + data['sections']['QA']['topics'][sdq]['easycorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['QA']['topics'][sdq]['easyincorrect'] , E_I[1] + data['sections']['QA']['topics'][sdq]['easyincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['QA']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['QA']['topics'][sdq]['easyNAtotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['QA']['topics'][sdq]['mediumcorrect'] , M_C[1] + data['sections']['QA']['topics'][sdq]['mediumcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['QA']['topics'][sdq]['mediumincorrect'] , M_I[1] + data['sections']['QA']['topics'][sdq]['mediumincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['QA']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['QA']['topics'][sdq]['mediumNAtotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['QA']['topics'][sdq]['hardcorrect'] , H_C[1] + data['sections']['QA']['topics'][sdq]['hardcorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['QA']['topics'][sdq]['hardincorrect'] , H_I[1] + data['sections']['QA']['topics'][sdq]['hardincorrecttotaltime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['QA']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['QA']['topics']['Arithmetic - Part 1']['hardNAtotaltime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['C'] = [E_C[0] + data['sections']['QA']['topics'][sdq]['easyCorrect'] , E_C[1] + data['sections']['QA']['topics'][sdq]['easyCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['I'] = [E_I[0] + data['sections']['QA']['topics'][sdq]['easyIncorrect'] , E_I[1] + data['sections']['QA']['topics'][sdq]['easyIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['E']['NA'] = [E_NA[0] + data['sections']['QA']['topics'][sdq]['easyNA'] , E_NA[1] + data['sections']['QA']['topics'][sdq]['easyNATotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['C'] = [M_C[0] + data['sections']['QA']['topics'][sdq]['mediumCorrect'] , M_C[1] + data['sections']['QA']['topics'][sdq]['mediumCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['I'] = [M_I[0] + data['sections']['QA']['topics'][sdq]['mediumIncorrect'] , M_I[1] + data['sections']['QA']['topics'][sdq]['mediumIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['QA']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['QA']['topics'][sdq]['mediumNATotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['QA']['topics'][sdq]['hardCorrect'] , H_C[1] + data['sections']['QA']['topics'][sdq]['hardCorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['QA']['topics'][sdq]['hardIncorrect'] , H_I[1] + data['sections']['QA']['topics'][sdq]['hardIncorrectTotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['QA']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['QA']['topics']['Arithmetic - Part 1']['hardNATotalTime']]
 
     #print(user_dashboard)
     user.update_one({"email": current_user}, {"$set": {"dashboardAnalytics": user_dashboard}})
-    return {"message": "Test uploaded successfully"}
+    print("--------------------------------")
+    print({"message": "Test uploaded successfully"})
+    print("--------------------------------")
+    return {"message": "Test uploaded successfully" , "id": str(test_id.inserted_id)}
 
 
 @router.post("/getquestiondata")
@@ -441,5 +443,5 @@ async def get_question_data(request: Request, current_user: str = Depends(verify
         for t in QAq:
             t['_id'] = str(t['_id'])
             QAques.append(t)
-    print({"VARCques": VARCques, "DILRques": DILRques, "QAques": QAques})
+    #print({"VARCques": VARCques, "DILRques": DILRques, "QAques": QAques})
     return {"VARCques": VARCques, "DILRques": DILRques, "QAques": QAques}
