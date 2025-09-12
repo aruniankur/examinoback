@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 instance/
 .env
-
+.venv/
 # API Documentation files
 CORS_CONFIG.md
 QUESTIONS_API.md
@@ -12,6 +12,7 @@ QUESTIONS_API_DETAILED.md
 QUESTIONS_COMPARISON_CHART.md
 cirqlixproject-0992c46cc6dd.json
 ci-0992c46cc6dd.json
+.python-version
 
 
 
