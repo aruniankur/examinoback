@@ -26,6 +26,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OTP and JWT storage (in production, use Redis or database)
 otp_store = {}
+password_reset_store = {}  # Store password reset OTPs
 jwt_blacklist = set()
 
 # Helper function to convert ObjectId to string
@@ -60,6 +61,14 @@ class UserRegistration(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    otp: str
+    new_password: str
 
 class Token(BaseModel):
     access_token: str
@@ -127,6 +136,33 @@ def sendmail(email,otp):
         return True
     except requests.exceptions.RequestException as e:
         print("Error:", e)
+        return False
+
+def send_password_reset_mail(email, otp):
+    """Send password reset OTP email"""
+    url = "https://mailman-717399453972.europe-west1.run.app"
+    payload = {
+        "email": email,
+        "subject": "Password Reset OTP - Examino",
+        "message": f"""
+        You requested a password reset for your Examino account.
+        
+        Your password reset OTP is: {otp}
+        
+        This OTP is valid for 10 minutes.
+        
+        If you didn't request this password reset, please ignore this email.
+        
+        Best regards,
+        Examino Team
+        """,
+    }
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        print("Password Reset Email Status Code:", response.status_code)
+        return True
+    except requests.exceptions.RequestException as e:
+        print("Password Reset Email Error:", e)
         return False
 
 # Routes
@@ -389,6 +425,102 @@ async def logout(current_user: str = Depends(verify_token)):
     jwt_blacklist.add(current_user)
     return {"message": "Successfully logged out"}
 
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """Request password reset OTP"""
+    email = request.email
+    
+    # Get user collection
+    user_collection = get_user_collection()
+    
+    # Check if user exists
+    found_user = user_collection.find_one({"email": email})
+    if not found_user:
+        # For security, don't reveal if user exists or not
+        return {"message": "If the email exists, a password reset OTP has been sent"}
+    
+    # Generate OTP for password reset
+    otp = generate_otp()
+    expiry = time.time() + 600  # 10 minutes expiry for password reset
+    password_reset_store[email] = {"otp": otp, "expiry": expiry}
+    
+    # Send password reset email
+    if send_password_reset_mail(email, otp):
+        return {"message": "If the email exists, a password reset OTP has been sent"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to send password reset OTP"
+        )
+
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Reset password using OTP verification"""
+    email = request.email
+    otp = request.otp
+    new_password = request.new_password
+    
+    # Validate new password length
+    if len(new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters long"
+        )
+    
+    # Check if password reset OTP exists
+    reset_record = password_reset_store.get(email)
+    if not reset_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password reset not requested or OTP expired"
+        )
+    
+    # Check if OTP has expired
+    if time.time() > reset_record["expiry"]:
+        password_reset_store.pop(email, None)  # Remove expired OTP
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password reset OTP has expired"
+        )
+    
+    # Verify OTP
+    if otp != reset_record["otp"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid OTP"
+        )
+    
+    # Get user collection
+    user_collection = get_user_collection()
+    
+    # Find user in database
+    found_user = user_collection.find_one({"email": email})
+    if not found_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Create new password credential
+    new_credential = create_user_credential(found_user["name"], new_password)
+    
+    # Update password in database
+    result = user_collection.update_one(
+        {"email": email},
+        {"$set": {"password": new_credential}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Remove the used OTP from storage
+    password_reset_store.pop(email, None)
+    
+    return {"message": "Password reset successfully"}
+
 @router.get("/dashboard")
 async def get_dashboard_analytics(current_user: str = Depends(verify_token)):
     """Get dashboard analytics for the authenticated user"""
@@ -494,33 +626,3 @@ async def update_user_profile(
         )
     
     return {"message": "Profile updated successfully", "updated_fields": list(update_data.keys())}
-
-class AnalyticsUpdate(BaseModel):
-    section: str  # VARC, DILR, QA
-    subsection: Optional[str] = None  # e.g., "Reading Comprehension", "Data Interpretation"
-    difficulty: Optional[str] = None  # E, M, H
-    result_type: str  # correct, incorrect, NA
-    time_taken: float  # time in minutes
-    question_count: int = 1
-
-@router.post("/analytics/update")
-async def update_analytics(
-    analytics_data: AnalyticsUpdate,
-    current_user: str = Depends(verify_token)
-):
-    """Update user's dashboard analytics based on test performance"""
-    user_collection = get_user_collection()
-    
-    # This is a placeholder for updating analytics
-    # In a real implementation, you would:
-    # 1. Calculate new averages
-    # 2. Update performance trends
-    # 3. Recalculate accuracy percentages
-    # 4. Update section breakdowns
-    
-    # For now, just return success
-    return {
-        "message": "Analytics update endpoint ready",
-        "note": "Full analytics calculation logic needs to be implemented"
-    }
-

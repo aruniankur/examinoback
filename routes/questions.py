@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Union
-from routes.database import passage,DILRquestion,VARCquestion,QAquestion
+from routes.database import passage,DILRquestion,VARCquestion,QAquestion, user
 from routes.auth import verify_token
 import random
+import os
 
 router = APIRouter(prefix="/questions", tags=["questions"])
 
@@ -286,4 +287,42 @@ async def create_dilr_questions(request: QuestionRequest, current_user: str = De
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error generating DILR questions: {str(e)}"
+        )
+
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import SecretStr
+
+API_KEY=os.getenv("API_KEY","None")
+MODEL=os.getenv("MODEL","None")
+
+llm = ChatGoogleGenerativeAI(model=MODEL, api_key=SecretStr(API_KEY) if API_KEY else None, temperature=0.7)
+
+class AIQuestionResponseRequest(BaseModel):
+    questionid: str
+    section: str
+
+@router.post("/aiquestionresponse")
+async def aiquestionresponse(request: AIQuestionResponseRequest, current_user: str = Depends(verify_token)):
+    print(request)
+    try:
+        user_doc = user.find_one({"email": current_user})
+        if not user_doc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        if request.section=="QA":
+            question = QAquestion.find_one({"question_id": request.questionid})
+        elif request.section=="VARC":
+            question = VARCquestion.find_one({"question_id": request.questionid})
+        elif request.section=="DILR":
+            question = DILRquestion.find_one({"question_id": request.questionid})
+        
+        response = llm.invoke("how will you prove the value of pi is 3.14 , using a mathematical proof")
+        return {"status": "ok" , "response": response.content}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error generating AI question response: {str(e)}"
         )

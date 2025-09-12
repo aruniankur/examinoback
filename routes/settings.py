@@ -48,7 +48,7 @@ class SettingsUpdateRequest(BaseModel):
     profile: Optional[ProfileUpdateRequest] = None
     password: Optional[PasswordUpdateRequest] = None
 
-@router.get("/")
+@router.get("/settings")
 async def get_settings(current_user: str = Depends(verify_token)):
     """Get user profile settings (name, email, degree, DOB only)"""
     user_collection = get_user_collection()
@@ -77,7 +77,7 @@ async def get_settings(current_user: str = Depends(verify_token)):
         "data": settings_data
     }
 
-@router.post("/")
+@router.post("/settings")
 async def update_settings(
     update_request: SettingsUpdateRequest = Body(...),
     current_user: str = Depends(verify_token)

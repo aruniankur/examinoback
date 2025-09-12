@@ -175,14 +175,14 @@ async def get_test_result_detail(request: Request, current_user: str = Depends(v
             detail="Test not found"
         )
     test_data['_id'] = str(test_data['_id'])
-    print(test_data)
+    #print(test_data)
     return test_data
 
 @router.post("/testresult")
 async def upload_test(request: Request, current_user: str = Depends(verify_token)):
     data = await request.json()
     test_id = test.insert_one(data)
-    print(data)
+    #print(data)
     print(test_id.inserted_id)
     user.update_one({"email": current_user}, {"$push": {"test_id": test_id.inserted_id}, "$inc": { "trail": -1 } })
     us = user.find_one({"email": current_user})
@@ -399,7 +399,7 @@ async def upload_test(request: Request, current_user: str = Depends(verify_token
             user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['M']['NA'] = [M_NA[0] + data['sections']['QA']['topics'][sdq]['mediumNA'] , M_NA[1] + data['sections']['QA']['topics'][sdq]['mediumNATotalTime']]
             user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['C'] = [H_C[0] + data['sections']['QA']['topics'][sdq]['hardCorrect'] , H_C[1] + data['sections']['QA']['topics'][sdq]['hardCorrectTotalTime']]
             user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['I'] = [H_I[0] + data['sections']['QA']['topics'][sdq]['hardIncorrect'] , H_I[1] + data['sections']['QA']['topics'][sdq]['hardIncorrectTotalTime']]
-            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['QA']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['QA']['topics']['Arithmetic - Part 1']['hardNATotalTime']]
+            user_dashboard['Total Question Solved']['QA']['section_breakdown'][sdq]['H']['NA'] = [H_NA[0] + data['sections']['QA']['topics'][sdq]['hardNA'] , H_NA[1] + data['sections']['QA']['topics'][sdq]['hardNATotalTime']]
 
     #print(user_dashboard)
     user.update_one({"email": current_user}, {"$set": {"dashboardAnalytics": user_dashboard}})
