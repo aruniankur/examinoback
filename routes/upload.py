@@ -184,7 +184,7 @@ async def upload_test(request: Request, current_user: str = Depends(verify_token
     test_id = test.insert_one(data)
     print(data)
     print(test_id.inserted_id)
-    user.update_one({"email": current_user}, {"$push": {"test_id": test_id.inserted_id}})
+    user.update_one({"email": current_user}, {"$push": {"test_id": test_id.inserted_id}, "$inc": { "trail": -1 } })
     us = user.find_one({"email": current_user})
     if not us:
         raise HTTPException(

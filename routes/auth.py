@@ -55,6 +55,7 @@ class UserRegistration(BaseModel):
     role: str = "student"  # student, office employee, other
     dob: str
     degree: str  # can be various degrees or other
+    mobileNumber: str
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -182,7 +183,7 @@ async def register_user(user_data: UserRegistration):
     role = user_data.role
     degree = user_data.degree
     dob = user_data.dob
-
+    mobileNumber = user_data.mobileNumber
     if email not in otp_store or not otp_store[email].get("verified"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -210,9 +211,10 @@ async def register_user(user_data: UserRegistration):
         "degree": degree,
         "numberOfDevices": 0,  # keep for now, no implementation
         "subscription": "Basic",  # basic / pro
-        "trail":5,
+        "mobileNumber": mobileNumber if mobileNumber else None,
+        "trail":10,
         "subscription_end_date": None,
-        "payment_date": {},
+        "payment_info": [],
         "test_id": [],  # will store the test id
         "dashboardAnalytics": {  # these data is shown in the dashboard
             "Accuracy": 0,
@@ -399,8 +401,15 @@ async def get_dashboard_analytics(current_user: str = Depends(verify_token)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+    if found_user.get("subscription") == "Pro":
+        subscription_end_date = found_user.get("subscription_end_date")
+        if subscription_end_date:
+            if subscription_end_date < time.time():
+                found_user["subscription"] = "Basic"
+                found_user["subscription_end_date"] = None
+                found_user["trail"] = 10
     # Return dashboard analytics
+    user_collection.update_one({"email": current_user}, {"$set": found_user})
     dashboard_data = {
         "user_info": {
             "name": found_user.get("name"),
@@ -411,7 +420,9 @@ async def get_dashboard_analytics(current_user: str = Depends(verify_token)):
             "subscription_end_date": found_user.get("subscription_end_date"),
             "created_at": found_user.get("created_at"),
             "last_login": found_user.get("last_login"),
-            "is_active": found_user.get("is_active", True)
+            "is_active": found_user.get("is_active", True),
+            "mobileNumber": found_user.get("mobileNumber","+919369203455"),
+            "trail": found_user.get("trail",-1)
         },
         "dashboardAnalytics": found_user.get("dashboardAnalytics", {}),
         "test_id": found_user.get("test_id", []),

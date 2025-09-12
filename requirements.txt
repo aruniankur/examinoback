@@ -49,3 +49,4 @@ typing_extensions==4.15.0
 uritemplate==4.2.0
 urllib3==2.5.0
 wsproto==1.2.0
+razorpay==1.4.2

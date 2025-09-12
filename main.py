@@ -7,6 +7,7 @@ from routes import auth
 from routes import questions
 from routes import settings
 from routes import upload
+from routes import payment
 import os
 
 app = FastAPI(
@@ -35,3 +36,4 @@ app.include_router(auth.router)
 app.include_router(questions.router)
 app.include_router(settings.router)
 app.include_router(upload.router)
+app.include_router(payment.router)

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Body
+from fastapi import APIRouter, HTTPException, Depends, status, Body, Request
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from routes.database import get_user_collection
-from routes.auth import verify_token
+from routes.auth import verify_token, sendmail
 from bson import ObjectId
 
 router = APIRouter(prefix="/settings", tags=["settings"])
@@ -34,6 +34,7 @@ class ProfileUpdateRequest(BaseModel):
     email: Optional[EmailStr] = None
     degree: Optional[str] = None
     dob: Optional[str] = None
+    mobileNumber: Optional[str] = None
 
 class PasswordUpdateRequest(BaseModel):
     old: str
@@ -66,7 +67,8 @@ async def get_settings(current_user: str = Depends(verify_token)):
         "name": found_user.get("name", ""),
         "email": found_user.get("email", ""),
         "degree": found_user.get("degree", ""),
-        "dob": found_user.get("dob", "")
+        "dob": found_user.get("dob", ""),
+        "mobileNumber": found_user.get("mobileNumber", "")
     }
     
     return {
@@ -165,7 +167,8 @@ async def update_settings(
         "name": updated_user.get("name", ""),
         "email": updated_user.get("email", ""),
         "degree": updated_user.get("degree", ""),
-        "dob": updated_user.get("dob", "")
+        "dob": updated_user.get("dob", ""),
+        "mobileNumber": updated_user.get("mobileNumber", "")
     }
     
     return {
@@ -219,3 +222,24 @@ async def change_password(
         "success": True,
         "message": "Password changed successfully"
     }
+
+
+
+@router.post("/support")
+async def support(request : Request, current_user: str = Depends(verify_token)):
+    user_collection = get_user_collection()
+    found_user = user_collection.find_one({"email": current_user})
+    if not found_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    data = await request.json()
+    print(data)
+    if sendmail("aruniankur7@gmail.com", str(data) + " " + current_user):
+        return {"status": "ok"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to send"
+        )
