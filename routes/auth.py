@@ -22,7 +22,7 @@ security = HTTPBearer()
 # JWT Settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 180
 
 # OTP and JWT storage (in production, use Redis or database)
 otp_store = {}
